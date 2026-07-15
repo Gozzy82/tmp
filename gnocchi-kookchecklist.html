@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4efe7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Gnocchi met oesterzwammen — kookchecklist</title>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f4efe7;
+      --surface: #fffdf9;
+      --surface-strong: #ffffff;
+      --text: #28231f;
+      --muted: #756d65;
+      --accent: #ad472e;
+      --accent-soft: #f3ddd4;
+      --success: #66805b;
+      --success-soft: #e6eee2;
+      --border: #ddd4c9;
+      --shadow: 0 8px 24px rgba(64, 48, 34, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--background);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    main {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 18px 14px 116px;
+    }
+
+    header {
+      padding: 8px 4px 16px;
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: clamp(1.7rem, 6vw, 2.45rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .progress-panel {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -14px 18px;
+      padding: 10px 14px 12px;
+      background: rgba(244, 239, 231, 0.94);
+      border-bottom: 1px solid rgba(90, 70, 50, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+      font-size: 0.94rem;
+      font-weight: 750;
+    }
+
+    .progress-bar {
+      height: 11px;
+      overflow: hidden;
+      background: #e5ddd3;
+      border-radius: 999px;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: var(--success);
+      border-radius: inherit;
+      transition: width 180ms ease;
+    }
+
+    section {
+      margin: 20px 0 28px;
+      scroll-margin-top: 84px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 1.18rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      margin: 10px 0;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      user-select: none;
+      transition:
+        transform 120ms ease,
+        opacity 140ms ease,
+        border-color 140ms ease,
+        background 140ms ease;
+    }
+
+    .step:active {
+      transform: scale(0.992);
+    }
+
+    .step:focus-within {
+      outline: 3px solid rgba(173, 71, 46, 0.18);
+      outline-offset: 2px;
+    }
+
+    .step.done {
+      opacity: 0.72;
+      border-color: #becbb8;
+      background: var(--success-soft);
+    }
+
+    .step.done .step-body {
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+      text-decoration-color: rgba(40, 35, 31, 0.6);
+    }
+
+    input[type="checkbox"] {
+      width: 28px;
+      height: 28px;
+      margin: 0;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+
+    .step-title {
+      display: block;
+      margin-bottom: 2px;
+      font-weight: 800;
+    }
+
+    .step-body {
+      min-width: 0;
+    }
+
+    .step-text {
+      color: var(--text);
+    }
+
+    .time {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 8px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 750;
+    }
+
+    .note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
+
+    .done-message {
+      display: none;
+      margin: 20px 0;
+      padding: 18px;
+      text-align: center;
+      background: var(--success-soft);
+      border: 1px solid #becbb8;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .done-message.show {
+      display: block;
+    }
+
+    .done-message strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.2rem;
+    }
+
+    .bottom-bar {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 20;
+      padding: 11px max(14px, env(safe-area-inset-right))
+        calc(11px + env(safe-area-inset-bottom))
+        max(14px, env(safe-area-inset-left));
+      background: rgba(255, 253, 249, 0.96);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .bottom-bar-inner {
+      display: flex;
+      width: min(760px, 100%);
+      margin: 0 auto;
+      gap: 10px;
+    }
+
+    .button {
+      min-height: 48px;
+      padding: 11px 15px;
+      border: 0;
+      border-radius: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      flex: 1;
+      color: white;
+      background: var(--accent);
+    }
+
+    .button-secondary {
+      color: var(--text);
+      background: #ece4da;
+    }
+
+    .button:active {
+      transform: translateY(1px);
+    }
+
+    @media (min-width: 700px) {
+      main {
+        padding-top: 28px;
+      }
+
+      .step {
+        padding: 16px;
+      }
+    }
+
+    @media print {
+      .progress-panel,
+      .bottom-bar {
+        display: none;
+      }
+
+      main {
+        padding-bottom: 20px;
+      }
+
+      .step {
+        break-inside: avoid;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1>Gnocchi met oesterzwammen</h1>
+      <p class="subtitle">
+        Mobiele kookchecklist voor twee pannen. Tik op een stap om hem af te vinken.
+      </p>
+    </header>
+
+    <div class="progress-panel" aria-live="polite">
+      <div class="progress-row">
+        <span>Voortgang</span>
+        <span id="progressText">0 van 21 klaar</span>
+      </div>
+      <div class="progress-bar" aria-hidden="true">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <section>
+      <h2>Pan 1 — saus</h2>
+
+      <label class="step">
+        <input type="checkbox" data-step="1">
+        <span class="step-body">
+          <span class="step-title">Ui apart houden</span>
+          <span class="step-text">Haal de ui eventueel uit de roerbakgroente.</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="2">
+        <span class="step-body">
+          <span class="step-title">Ui bakken</span>
+          <span class="step-text">Bak de ui in wat olie op middelhoog vuur.</span>
+          <span class="time">2–3 minuten</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="3">
+        <span class="step-body">
+          <span class="step-title">Knoflook toevoegen</span>
+          <span class="step-text">Voeg de fijngesneden knoflook toe en bak kort mee.</span>
+          <span class="time">30–60 seconden</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="4">
+        <span class="step-body">
+          <span class="step-title">Rulgehakt bakken</span>
+          <span class="step-text">Voeg het plantaardige rulgehakt toe en bak het mee.</span>
+          <span class="time">Ongeveer 2 minuten</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="5">
+        <span class="step-body">
+          <span class="step-title">Tomatenpulp erbij</span>
+          <span class="step-text">
+            Voeg de tomatenpulp toe met een klein scheutje water.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="6">
+        <span class="step-body">
+          <span class="step-title">Saus laten pruttelen</span>
+          <span class="step-text">
+            Laat de saus op laag vuur zacht pruttelen en roer af en toe.
+          </span>
+        </span>
+      </label>
+    </section>
+
+    <section>
+      <h2>Pan 2 — oesterzwammen</h2>
+
+      <label class="step">
+        <input type="checkbox" data-step="7">
+        <span class="step-body">
+          <span class="step-title">Oesterzwammen voorbereiden</span>
+          <span class="step-text">
+            Scheur ze in stukken en meng ze met een beetje olie en peper. Nog geen zout.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="8">
+        <span class="step-body">
+          <span class="step-title">Oesterzwammen bakken</span>
+          <span class="step-text">
+            Bak ze op hoog vuur, liefst in één laag. Laat ze steeds even liggen voordat je omschept.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="9">
+        <span class="step-body">
+          <span class="step-title">Zout toevoegen</span>
+          <span class="step-text">
+            Voeg pas vlak voor het einde een klein beetje zout toe.
+          </span>
+          <span class="time">Laatste 30 seconden</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="10">
+        <span class="step-body">
+          <span class="step-title">Zwammen apart leggen</span>
+          <span class="step-text">
+            Haal ze uit de pan. Doe de balsamicocrème er nog niet over.
+          </span>
+        </span>
+      </label>
+    </section>
+
+    <section>
+      <h2>Pan 2 — groenten en gnocchi</h2>
+
+      <label class="step">
+        <input type="checkbox" data-step="11">
+        <span class="step-body">
+          <span class="step-title">Roerbakgroente bakken</span>
+          <span class="step-text">
+            Bak de rest van de roerbakgroente op hoog vuur. Zorg voor wat kleur, maar houd nog beet.
+          </span>
+          <span class="time">4–6 minuten</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="12">
+        <span class="step-body">
+          <span class="step-title">Groenten apart leggen</span>
+          <span class="step-text">
+            Haal de gebakken groenten uit de pan en bewaar ze tijdelijk apart.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="13">
+        <span class="step-body">
+          <span class="step-title">Olie en boter toevoegen</span>
+          <span class="step-text">
+            Doe wat olie in de pan, eventueel samen met een klontje boter.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="14">
+        <span class="step-body">
+          <span class="step-title">Gnocchi bakken</span>
+          <span class="step-text">
+            Bak de gnocchi direct uit de verpakking op middelhoog tot hoog vuur. Schep regelmatig om.
+          </span>
+          <span class="time">6–8 minuten</span>
+        </span>
+      </label>
+    </section>
+
+    <section>
+      <h2>Laatste minuten</h2>
+
+      <label class="step">
+        <input type="checkbox" data-step="15">
+        <span class="step-body">
+          <span class="step-title">Groenten in de saus</span>
+          <span class="step-text">
+            Wanneer de gnocchi nog ongeveer 3 minuten nodig hebben, schep je de groenten door de tomatensaus.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="16">
+        <span class="step-body">
+          <span class="step-title">Kort laten meetrekken</span>
+          <span class="step-text">
+            Laat de groenten zacht in de saus meetrekken.
+          </span>
+          <span class="time">2–3 minuten</span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="17">
+        <span class="step-body">
+          <span class="step-title">Saus proeven</span>
+          <span class="step-text">
+            Breng op smaak met peper en eventueel zout.
+          </span>
+        </span>
+      </label>
+
+      <div class="note">
+        De gnocchi blijven apart van de saus, zodat ze krokant blijven.
+      </div>
+    </section>
+
+    <section>
+      <h2>Serveren</h2>
+
+      <label class="step">
+        <input type="checkbox" data-step="18">
+        <span class="step-body">
+          <span class="step-title">Borden opmaken</span>
+          <span class="step-text">
+            Verdeel de gnocchi en de saus over de borden.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="19">
+        <span class="step-body">
+          <span class="step-title">Oesterzwammen erop</span>
+          <span class="step-text">
+            Leg de gebakken oesterzwammen bovenop het gerecht.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="20">
+        <span class="step-body">
+          <span class="step-title">Balsamicocrème toevoegen</span>
+          <span class="step-text">
+            Doe nu pas de crema balsamico over de oesterzwammen.
+          </span>
+        </span>
+      </label>
+
+      <label class="step">
+        <input type="checkbox" data-step="21">
+        <span class="step-body">
+          <span class="step-title">Basilicum erover</span>
+          <span class="step-text">
+            Scheur eventueel verse basilicumblaadjes over het gerecht.
+          </span>
+        </span>
+      </label>
+    </section>
+
+    <div class="done-message" id="doneMessage">
+      <strong>Klaar! 🍽️</strong>
+      Alles is afgevinkt. Eet smakelijk.
+    </div>
+  </main>
+
+  <div class="bottom-bar">
+    <div class="bottom-bar-inner">
+      <button class="button button-secondary" id="resetButton" type="button">
+        Opnieuw
+      </button>
+      <button class="button button-primary" id="nextButton" type="button">
+        Volgende stap
+      </button>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "gnocchi-checklist-v1";
+      const checkboxes = Array.from(
+        document.querySelectorAll('input[type="checkbox"][data-step]')
+      );
+      const progressText = document.getElementById("progressText");
+      const progressFill = document.getElementById("progressFill");
+      const doneMessage = document.getElementById("doneMessage");
+      const resetButton = document.getElementById("resetButton");
+      const nextButton = document.getElementById("nextButton");
+
+      function readSavedState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function saveState() {
+        const state = {};
+        for (const checkbox of checkboxes) {
+          state[checkbox.dataset.step] = checkbox.checked;
+        }
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {
+          // De checklist blijft werken wanneer opslag is uitgeschakeld.
+        }
+      }
+
+      function updateInterface() {
+        let completed = 0;
+
+        for (const checkbox of checkboxes) {
+          const step = checkbox.closest(".step");
+          step.classList.toggle("done", checkbox.checked);
+
+          if (checkbox.checked) {
+            completed += 1;
+          }
+        }
+
+        const total = checkboxes.length;
+        const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+        progressText.textContent = `${completed} van ${total} klaar`;
+        progressFill.style.width = `${percentage}%`;
+        doneMessage.classList.toggle("show", completed === total);
+
+        const nextUnchecked = checkboxes.find(checkbox => !checkbox.checked);
+        nextButton.textContent = nextUnchecked ? "Volgende stap" : "Alles klaar";
+        nextButton.disabled = !nextUnchecked;
+        nextButton.style.opacity = nextUnchecked ? "1" : "0.6";
+      }
+
+      function restoreState() {
+        const saved = readSavedState();
+
+        for (const checkbox of checkboxes) {
+          checkbox.checked = Boolean(saved[checkbox.dataset.step]);
+        }
+
+        updateInterface();
+      }
+
+      for (const checkbox of checkboxes) {
+        checkbox.addEventListener("change", () => {
+          saveState();
+          updateInterface();
+        });
+      }
+
+      resetButton.addEventListener("click", () => {
+        const hasProgress = checkboxes.some(checkbox => checkbox.checked);
+
+        if (hasProgress && !window.confirm("Alle vinkjes wissen en opnieuw beginnen?")) {
+          return;
+        }
+
+        for (const checkbox of checkboxes) {
+          checkbox.checked = false;
+        }
+
+        saveState();
+        updateInterface();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      nextButton.addEventListener("click", () => {
+        const nextUnchecked = checkboxes.find(checkbox => !checkbox.checked);
+
+        if (!nextUnchecked) {
+          return;
+        }
+
+        nextUnchecked.closest(".step").scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+        nextUnchecked.focus({ preventScroll: true });
+      });
+
+      restoreState();
+    })();
+  </script>
+</body>
+</html>
